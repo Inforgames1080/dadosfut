@@ -1,0 +1,51 @@
+import numpy as np
+import math
+import matplotlib.pyplot as plt
+
+# Função para calcular a probabilidade de Poisson
+def poisson_prob(lambda_, k):
+    return (lambda_**k * np.exp(-lambda_)) / math.factorial(k)
+
+# Taxas médias de gols (lambda) para os times A e B
+lambda_a = 1.5  # Taxa de gols do Time A
+lambda_b = 1.2  # Taxa de gols do Time B
+
+# Número de gols possíveis (considerando até 3 gols)
+gols_possiveis = [0, 1, 2, 3]
+
+# Probabilidades de gols para o Time A
+probabilidades_a = [poisson_prob(lambda_a, gols) for gols in gols_possiveis]
+
+# Probabilidades de gols para o Time B
+probabilidades_b = [poisson_prob(lambda_b, gols) for gols in gols_possiveis]
+
+# Calculando a probabilidade de vitória, empate e derrota
+prob_vitoria_a = sum([probabilidades_a[i] * sum([probabilidades_b[j] for j in range(i)]) for i in range(1, 4)])
+prob_empate = sum([probabilidades_a[i] * probabilidades_b[i] for i in range(4)])
+prob_vitoria_b = sum([probabilidades_b[i] * sum([probabilidades_a[j] for j in range(i)]) for i in range(1, 4)])
+
+# Exibindo as probabilidades
+print(f"Probabilidade de vitória do Time A: {prob_vitoria_a*100:.2f}%")
+print(f"Probabilidade de empate: {prob_empate*100:.2f}%")
+print(f"Probabilidade de vitória do Time B: {prob_vitoria_b*100:.2f}%")
+
+# Plotando as probabilidades de gols para os dois times
+plt.figure(figsize=(10, 6))
+
+# Gráfico para o Time A
+plt.bar(gols_possiveis, probabilidades_a, width=0.3, label="Probabilidade de Gols Time A", align='center')
+
+# Gráfico para o Time B
+plt.bar(np.array(gols_possiveis) + 0.4, probabilidades_b, width=0.3, label="Probabilidade de Gols Time B", align='center')
+
+# Adicionando título e rótulos
+plt.title("Probabilidade de Gols (Modelo de Poisson) para os Times A e B")
+plt.xlabel("Número de Gols")
+plt.ylabel("Probabilidade")
+plt.xticks(np.array(gols_possiveis) + 0.2, gols_possiveis)  # Ajusta o eixo x para centralizar as barras
+plt.legend()
+
+# Exibindo o gráfico
+plt.tight_layout()
+plt.show()
+
